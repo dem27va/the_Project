@@ -3,7 +3,7 @@ const canv_context = canv.getContext('2d');
 
 let platform_width = 100;
 let platform_margin_bottom = 50;
-let platform_height = 20;
+let platform_height = 10;
 let leftArrow = false;
 let rightArrow = false;
 let ballRadius = 7;
@@ -71,10 +71,22 @@ function ballWallCollision() {
 
 //Столкновение с платформой
 function ballPaddleCollision() {
-    if(ball.x > platform.x && ball.x < platform.x + platform.width && ball.y > platform.y && ball.y < platform.y + platform.height) {
-        ball.dx = -ball.dx;
-        ball.dy = -ball.dy;
+    //Определяем точку удара шарика о платформу в диапазоне от -1 до 1
+    //сначала получаем значение от минул половины длины платформы до плюс половины длины платформы,
+    //а потом делим на половину длины платформы
+    let ballHitsPlatformPoint = (ball.x - (platform.x + platform.width / 2)) / (platform.width / 2);
+    
+    //Получаем угол отражения шара от платформы в диапазоне от -60 до +60 градусов
+    //(в реальности чуть больше за счет того, что при расчете ballHitsPlatformPoint мы берем координату ball.x, а платформа отбивает ball.x+ball.radius)
+    let ballReflactionAngle = ballHitsPlatformPoint * Math.PI / 3;
+    
+    
+    if(ball.x + ball.radius > platform.x && ball.x - ball.radius < platform.x + platform.width && ball.y + ball.radius > platform.y) {
+        ball.dx = ball.speed * Math.sin(ballReflactionAngle);
+        ball.dy = -ball.speed * Math.cos(ballReflactionAngle);
+        console.log(ballHitsPlatformPoint, ballReflactionAngle);
     }
+    
 }
 
 //Восстанавливаем шарик
