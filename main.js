@@ -1,6 +1,15 @@
 const canv = document.getElementById('canv');
 const canv_context = canv.getContext('2d');
 
+//Загружаем иконки
+const score_img = new Image();
+score_img.src = "img/score.png";
+const level_img = new Image();
+level_img.src = "img/level.png";
+const life_img = new Image();
+life_img.src = "img/life.png";
+
+
 let platform_width = 100;
 let platform_margin_bottom = 50;
 let platform_height = 10;
@@ -8,6 +17,11 @@ let leftArrow = false;
 let rightArrow = false;
 let ballRadius = 7;
 let life = 3;
+let score = 0;
+let scoreStep = 5;
+let level = 1;
+const maxLevel = 3;
+let game_over = false;
 
 //Описываем платформу
 const platform = {
@@ -31,11 +45,11 @@ const ball = {
 //Рисуем платформу
 function drawplatform() {
     canv_context.clearRect(0, 0, canv.width, canv.height);
-    canv_context.lineWidth = 3;
-    canv_context.fillStyle = 'red';
+    canv_context.lineWidth = 2;
+    canv_context.fillStyle = 'black';
     canv_context.fillRect(platform.x, platform.y, platform.width, platform.height);
-    canv_context.strokeStyle = 'black';
-    canv_context.strokeRect(platform.x, platform.y, platform.width, platform.height);    
+    //canv_context.strokeStyle = 'black';
+    //canv_context.strokeRect(platform.x, platform.y, platform.width, platform.height);    
 }
 
 //Рисуем шар
@@ -129,9 +143,115 @@ function moveplatform() {
     }
 }
 
+//Создаем блоки
+const block = {
+    row : 2,
+    column : 5,
+    width : 55,
+    height : 20,
+    offsetLeft : 20,
+    offsetTop : 20,
+    marginTop : 40,
+    fillColor : 'brown',
+    strokeColor : 'black'
+}
+let blocks = [];
+function createBlocks() {    
+    for(let row = 0; row < block.row; row++) {
+        blocks[row] = [];
+        for(col = 0; col < block.column; col++) {
+            blocks[row][col] = {
+                x : col * (block.offsetLeft + block.width) + block.offsetLeft,
+                y : row * (block.offsetTop + block.height) + block.offsetTop + block.marginTop,
+                notBroken : true 
+            }
+        }
+        
+    }
+}
+createBlocks();
+
+//Рисуем блоки
+function drawBlocks() {
+    for(let row = 0; row < block.row; row++) {
+        for(col = 0; col < block.column; col++) {
+            let bl = blocks[row][col];
+            if(bl.notBroken) {
+                canv_context.fillStyle = block.fillColor;
+                canv_context.fillRect(bl.x, bl.y, block.width, block.height);
+                canv_context.strokeStyle = block.strokeColor;
+                canv_context.strokeRect(bl.x, bl.y, block.width, block.height);
+            }
+        }
+     }
+}
+
+//Столкновения шарика с блоком
+function ballBlockCollision() {
+    for(let row = 0; row < block.row; row++) {
+        for(col = 0; col < block.column; col++) {
+            let bl = blocks[row][col];
+            if(bl.notBroken) {
+                if(ball.x + ball.radius > bl.x
+                    && ball.x - ball.radius < bl.x + block.width 
+                    && ball.y + ball.radius > bl.y
+                    && ball.y - ball.radius < bl.y + block.height) {
+                        ball.dy = - ball.dy;
+                        bl.notBroken = false;
+                        score += scoreStep;
+                    }
+            }
+        }
+     }
+}
+
+
+//Показываем игровую информацию
+function showGameInfo(txt, txt_x, txt_y, img, img_x, img_y) {
+    canv_context.fillStyle = 'black';
+    canv_context.font = '20px Calibri';
+    canv_context.fillText(txt, txt_x, txt_y);
+    canv_context.drawImage(img, img_x, img_y, width = 30, height = 30);
+}
+
+//Определяем завершение игры
+function gameOver() {
+    if(life <= 0) {
+        game_over = true;
+    }
+}
+
+//Переход на следующий уровень
+function nextLevel() {
+    let levelCleared = true;
+    for(let row = 0; row < block.row; row++) {
+        for(col = 0; col < block.column; col++) {
+            levelCleared = levelCleared &&  !blocks[row][col].notBroken;
+        }
+    }
+
+    if(levelCleared) {
+        if(level >= maxLevel) {
+            game_over = true;
+            return;
+        }
+        block.row++;
+        createBlocks();
+        ball.speed += 0.5;
+        resetBall();
+        level++;
+    }
+}
+
+
 function draw() {
     drawplatform();
     drawBall();
+    drawBlocks();
+
+    showGameInfo(score, 40, 27, score_img, 5, 5);
+    showGameInfo(level, canv.width / 2, 27, level_img, (canv.width / 2) - 35, 5);
+    showGameInfo(life, canv.width - 15, 27, life_img, canv.width - 50, 5);    
 }
 
 function update() {
@@ -139,6 +259,9 @@ function update() {
     moveBall();
     ballWallCollision();
     ballPaddleCollision();
+    ballBlockCollision();
+    gameOver();
+    nextLevel();
 }
 
 
@@ -147,7 +270,9 @@ function loop() {
     draw();
     update();
 
-    requestAnimationFrame(loop);
+    if(!game_over) {    //Выполняем основной цикл только если игра не не закончена 
+        requestAnimationFrame(loop);
+    }    
 }
 
 loop();
