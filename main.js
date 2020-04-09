@@ -9,19 +9,27 @@ level_img.src = "img/level.png";
 const life_img = new Image();
 life_img.src = "img/life.png";
 
+//Кол-во уровней, жизней и очков 
+const maxLevel = 3;
+let level = 1;
+const maxLife = 3;
+let life = maxLife;
+let scoreStep = 5;
+let score = 0;
 
-let platform_width = 100;
-let platform_margin_bottom = 50;
-let platform_height = 10;
+//Параметры платформы и шарика
+const platform_width = 100;
+const platform_margin_bottom = 50;
+const platform_height = 10;
+const ballRadius = 7;
 let leftArrow = false;
 let rightArrow = false;
-let ballRadius = 7;
-let life = 3;
-let score = 0;
-let scoreStep = 5;
-let level = 1;
-const maxLevel = 3;
-let game_over = false;
+
+//Состояния игры 
+let gameMenu = true;
+let gameIsOver = false;
+let gamePaused = false;
+let victory = false;
 
 //Описываем платформу
 const platform = {
@@ -43,16 +51,14 @@ const ball = {
 }
 
 //Рисуем платформу
-function drawplatform() {
+function drawPlatform() {
     canv_context.clearRect(0, 0, canv.width, canv.height);
     canv_context.lineWidth = 2;
     canv_context.fillStyle = 'black';
-    canv_context.fillRect(platform.x, platform.y, platform.width, platform.height);
-    //canv_context.strokeStyle = 'black';
-    //canv_context.strokeRect(platform.x, platform.y, platform.width, platform.height);    
+    canv_context.fillRect(platform.x, platform.y, platform.width, platform.height);   
 }
 
-//Рисуем шар
+//Рисуем шарик
 function drawBall() {
     canv_context.beginPath();
     canv_context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
@@ -84,7 +90,7 @@ function ballWallCollision() {
 }
 
 //Столкновение с платформой
-function ballPaddleCollision() {
+function ballPlatformCollision() {
     //Определяем точку удара шарика о платформу в диапазоне от -1 до 1
     //сначала получаем значение от минул половины длины платформы до плюс половины длины платформы,
     //а потом делим на половину длины платформы
@@ -98,9 +104,7 @@ function ballPaddleCollision() {
     if(ball.x + ball.radius > platform.x && ball.x - ball.radius < platform.x + platform.width && ball.y + ball.radius > platform.y) {
         ball.dx = ball.speed * Math.sin(ballReflactionAngle);
         ball.dy = -ball.speed * Math.cos(ballReflactionAngle);
-        console.log(ballHitsPlatformPoint, ballReflactionAngle);
-    }
-    
+    }    
 }
 
 //Восстанавливаем шарик
@@ -111,24 +115,65 @@ function resetBall() {
     ball.dy = -3;
 }
 
+//Перезапускаем игру
+function resetGame() {
+    level = 1;
+    life = maxLife;
+    gameMenu = false;
+    gameIsOver = false;
+    gamePaused = true;
+    victory = false;
+    ball.speed = 5;
+    platform.x = canv.width/2 - platform_width/2;
+    platform.y = canv.height - platform_margin_bottom - platform_height;
+}
+
 //Управление платформой
-document.addEventListener('keydown', function(ev) {
+document.addEventListener('keydown', function(ev) { //Двигаем платформу влево/вправо когда кнопка нажата
     if(ev.keyCode == 37) {
         leftArrow = true;
     } else if(ev.keyCode == 39) {
         rightArrow = true;
     }
 })
-document.addEventListener('keyup', function(ev) {
+document.addEventListener('keyup', function(ev) { //Не двигаем платформу когда кнопка отпущена
     if(ev.keyCode == 37) {
         leftArrow = false;
     } else if(ev.keyCode == 39) {
         rightArrow = false;
     }
 })
+//Обрабатываем ввод с клавиатуры
+document.addEventListener('keydown', function(ev) { //Переключаем состояние паузы по нажатию "Esc"
+    if(ev.keyCode == 27) {
+        if(gamePaused) {
+            gamePaused = false;
+        } else {
+            gamePaused = true;
+        }        
+    }
+})
+document.addEventListener('keydown', function(ev) { //Запускаем игру по нажатию "Enter"
+    if(ev.keyCode == 13) {
+        if(gameMenu) {
+            gamePaused = false; //Выключаем паузу, если она была включена при нахождении в меню
+        }
+        gameMenu = false;              
+    }
+})
+document.addEventListener('keydown', function(ev) { //Переапускаем игру по нажатию "R" при game over
+    if(ev.keyCode == 82) {
+        if(gameIsOver || victory) {
+            canv_context.clearRect(0, 0, canv.width, canv.height);
+            resetGame();
+            resetBall();
+            createBlocks();
+        }                     
+    }
+})
 
 //Двигаем платформу
-function moveplatform() {
+function movePlatform() {
     if(leftArrow) {
         platform.x -= platform.dx;
     } else if(rightArrow) {
@@ -217,7 +262,7 @@ function showGameInfo(txt, txt_x, txt_y, img, img_x, img_y) {
 //Определяем завершение игры
 function gameOver() {
     if(life <= 0) {
-        game_over = true;
+        gameIsOver = true;
     }
 }
 
@@ -226,13 +271,13 @@ function nextLevel() {
     let levelCleared = true;
     for(let row = 0; row < block.row; row++) {
         for(col = 0; col < block.column; col++) {
-            levelCleared = levelCleared &&  !blocks[row][col].notBroken;
+            levelCleared = levelCleared &&  !blocks[row][col].notBroken; //Вернет true когда все блоки будут разбиты, т.е. notBroken == false
         }
     }
 
     if(levelCleared) {
         if(level >= maxLevel) {
-            game_over = true;
+            victory = true;
             return;
         }
         block.row++;
@@ -245,20 +290,63 @@ function nextLevel() {
 
 
 function draw() {
-    drawplatform();
+    drawPlatform();
     drawBall();
     drawBlocks();
 
-    showGameInfo(score, 40, 27, score_img, 5, 5);
-    showGameInfo(level, canv.width / 2, 27, level_img, (canv.width / 2) - 35, 5);
-    showGameInfo(life, canv.width - 15, 27, life_img, canv.width - 50, 5);    
+    showGameInfo(score, 50, 27, score_img, 5, 5);
+    showGameInfo(level, (canv.width / 2) + 20, 27, level_img, (canv.width / 2) - 20, 5);
+    showGameInfo(life, canv.width - 15, 27, life_img, canv.width - 50, 5);
+    
+    if(gameMenu) {
+        canv_context.rect(0, 0, canv.width, canv.height);
+        canv_context.fillStyle = 'rgba(0, 0, 0, 1)';
+        canv_context.fill();
+
+        canv_context.font = '25px Calibri';
+        canv_context.fillStyle = 'lightgray';
+        canv_context.textAlign = 'center';
+        canv_context.fillText('Нажмите "Enter" чтобы начать игру', canv.width / 2, canv.height / 2);
+    }
+    
+    if(gamePaused && !gameMenu) {
+        canv_context.rect(0, 0, canv.width, canv.height);
+        canv_context.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        canv_context.fill();
+
+        canv_context.font = '30px Calibri';
+        canv_context.fillStyle = 'lightgray';
+        canv_context.textAlign = 'center';
+        canv_context.fillText('Pause', canv.width / 2, canv.height / 2);
+    }
+
+    if(gameIsOver || victory) {
+        canv_context.rect(0, 0, canv.width, canv.height);
+        canv_context.fillStyle = 'rgba(0, 0, 0, 1)';
+        canv_context.fill();
+
+        canv_context.font = '30px Calibri';
+        canv_context.fillStyle = 'lightgray';
+        canv_context.textAlign = 'center';
+        if(gameIsOver) {
+            canv_context.fillText('Игра окончена. Ты проиграл :(', canv.width / 2, canv.height / 2);
+        } else {
+            canv_context.fillText('Поздравляю! Ты победил! :)', canv.width / 2, canv.height / 2);
+        }        
+        canv_context.font = '20px Calibri';
+        canv_context.fillText('Нажми "r" чтобы начать заново', canv.width / 2, canv.height * 2 / 3);
+        
+
+    }
 }
 
+
 function update() {
-    moveplatform();
+    if(gamePaused || gameMenu || gameIsOver || victory) return; //Ничег не обновляем, если игра на паузе
+    movePlatform();
     moveBall();
     ballWallCollision();
-    ballPaddleCollision();
+    ballPlatformCollision();
     ballBlockCollision();
     gameOver();
     nextLevel();
@@ -270,9 +358,11 @@ function loop() {
     draw();
     update();
 
-    if(!game_over) {    //Выполняем основной цикл только если игра не не закончена 
+    /*if(!gameIsOver) {    //Выполняем основной цикл только если игра не не закончена 
         requestAnimationFrame(loop);
-    }    
+    }  */ 
+
+    requestAnimationFrame(loop);
 }
 
 loop();
