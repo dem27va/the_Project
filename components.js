@@ -6,3 +6,7 @@ level_img.src = "img/level.png";
 
 const life_img = new Image();
 life_img.src = "img/life.png";
+
+/*const ball_img = new Image();
+ball_img.src = "img/ball.png";*/
+

@@ -1,13 +1,8 @@
+//import { createBlocks, drawBlocks } from './blocks.js';
+//import { drawBlocks } from './blocks.js';
+
 const canv = document.getElementById('canv');
 const canv_context = canv.getContext('2d');
-
-//Загружаем иконки
-const score_img = new Image();
-score_img.src = "img/score.png";
-const level_img = new Image();
-level_img.src = "img/level.png";
-const life_img = new Image();
-life_img.src = "img/life.png";
 
 //Кол-во уровней, жизней и очков 
 const maxLevel = 3;
@@ -18,7 +13,7 @@ let scoreStep = 5;
 let score = 0;
 
 //Параметры платформы и шарика
-const platform_width = 100;
+const platform_width = 75;
 const platform_margin_bottom = 50;
 const platform_height = 10;
 const ballRadius = 7;
@@ -60,7 +55,7 @@ function drawPlatform() {
 
 //Рисуем шарик
 function drawBall() {
-    canv_context.beginPath();
+canv_context.beginPath();
     canv_context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
     canv_context.fillStyle = 'red';
     canv_context.fill();
@@ -101,7 +96,10 @@ function ballPlatformCollision() {
     let ballReflactionAngle = ballHitsPlatformPoint * Math.PI / 3;
     
     
-    if(ball.x + ball.radius > platform.x && ball.x - ball.radius < platform.x + platform.width && ball.y + ball.radius > platform.y) {
+    if(ball.x + ball.radius > platform.x 
+        && ball.x - ball.radius < platform.x + platform.width 
+        && ball.y + ball.radius > platform.y
+        && ball.y - ball.radius < platform.y + platform_height) {
         ball.dx = ball.speed * Math.sin(ballReflactionAngle);
         ball.dy = -ball.speed * Math.cos(ballReflactionAngle);
     }    
@@ -191,11 +189,11 @@ function movePlatform() {
 //Создаем блоки
 const block = {
     row : 2,
-    column : 5,
+    column : 7,
     width : 55,
     height : 20,
-    offsetLeft : 20,
-    offsetTop : 20,
+    offsetLeft : 0,
+    offsetTop : 0,
     marginTop : 40,
     fillColor : 'brown',
     strokeColor : 'black'
@@ -214,7 +212,7 @@ function createBlocks() {
         
     }
 }
-createBlocks();
+//createBlocks();
 
 //Рисуем блоки
 function drawBlocks() {
@@ -230,6 +228,8 @@ function drawBlocks() {
         }
      }
 }
+
+createBlocks();
 
 //Столкновения шарика с блоком
 function ballBlockCollision() {
