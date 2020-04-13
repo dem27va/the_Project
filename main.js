@@ -1,13 +1,18 @@
-//import { createBlocks, drawBlocks } from './blocks.js';
-//import { drawBlocks } from './blocks.js';
+import  {Ball} from './modules/ball.js';
+//import {Block} from './modules/classBlock.js';
+import {createBlocks, level1, level2, level3} from './modules/levels.js';
+
+//Объявляем уровни
+let levelsArr = [level1, level2, level3];
+let currentLevel = 0;
 
 const canv = document.getElementById('canv');
 const canv_context = canv.getContext('2d');
 
 //Кол-во уровней, жизней и очков 
-const maxLevel = 3;
-let level = 1;
-const maxLife = 3;
+//const maxLevel = 3;
+//let level = 1;
+const maxLife = 1;
 let life = maxLife;
 let scoreStep = 5;
 let score = 0;
@@ -17,6 +22,7 @@ const platform_width = 75;
 const platform_margin_bottom = 50;
 const platform_height = 10;
 const ballRadius = 7;
+let ballSpeed = 4;
 let leftArrow = false;
 let rightArrow = false;
 
@@ -35,16 +41,6 @@ const platform = {
     dx : 10 //шаг перемещения платформы
 }
 
-//Описываем шарик
-const ball = {
-    x : canv.width / 2,
-    y : platform.y - ballRadius,
-    radius : ballRadius,
-    speed : 5,
-    dx : 3 * (Math.random() * 2 - 1), //Запускаем шаик под разными углами,
-    dy : -3
-}
-
 //Рисуем платформу
 function drawPlatform() {
     canv_context.clearRect(0, 0, canv.width, canv.height);
@@ -53,41 +49,27 @@ function drawPlatform() {
     canv_context.fillRect(platform.x, platform.y, platform.width, platform.height);   
 }
 
-//Рисуем шарик
-function drawBall() {
-canv_context.beginPath();
-    canv_context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-    canv_context.fillStyle = 'red';
-    canv_context.fill();
-    canv_context.strokeStyle = 'black';
-    canv_context.stroke();
-    canv_context.closePath();
-}
-
-//Двигаем шарик
-function moveBall() {
-    ball.x += ball.dx;
-    ball.y += ball.dy;
-}
+//Создаем обьект шарик
+let ball = new Ball(canv.width / 2, platform.y - ballRadius, ballSpeed, ballRadius);
 
 //Ударение о стену
 function ballWallCollision() {
-    if(ball.x + ball.radius > canv.width || ball.x - ball.radius < 0) {
+    if(ball.x + ball.radius >= canv.width || ball.x - ball.radius <= 0) {
         ball.dx = -ball.dx;
     }
-    if(ball.y - ball.radius < 0) {
+    if(ball.y - ball.radius <= 0) {
         ball.dy = -ball.dy;
     }
-    if(ball.y + ball.radius > canv.height) {
+    if(ball.y + ball.radius >= canv.height) {
         life--;
-        resetBall();
+        ball.resetBall(canv.width / 2, platform.y - ballRadius);        
     }
 }
 
 //Столкновение с платформой
 function ballPlatformCollision() {
     //Определяем точку удара шарика о платформу в диапазоне от -1 до 1
-    //сначала получаем значение от минул половины длины платформы до плюс половины длины платформы,
+    //сначала получаем значение от минус половины длины платформы до плюс половины длины платформы,
     //а потом делим на половину длины платформы
     let ballHitsPlatformPoint = (ball.x - (platform.x + platform.width / 2)) / (platform.width / 2);
     
@@ -105,23 +87,17 @@ function ballPlatformCollision() {
     }    
 }
 
-//Восстанавливаем шарик
-function resetBall() {
-    ball.x = canv.width / 2;
-    ball.y = platform.y - ballRadius;
-    ball.dx = 3 * (Math.random() * 2 - 1);
-    ball.dy = -3;
-}
-
 //Перезапускаем игру
 function resetGame() {
-    level = 1;
+    currentLevel = 0;
+    score = 0;
     life = maxLife;
+    ball.speed = 5;
     gameMenu = false;
     gameIsOver = false;
     gamePaused = true;
     victory = false;
-    ball.speed = 5;
+    
     platform.x = canv.width/2 - platform_width/2;
     platform.y = canv.height - platform_margin_bottom - platform_height;
 }
@@ -164,8 +140,8 @@ document.addEventListener('keydown', function(ev) { //Переапускаем �
         if(gameIsOver || victory) {
             canv_context.clearRect(0, 0, canv.width, canv.height);
             resetGame();
-            resetBall();
-            createBlocks();
+            ball.resetBall(canv.width / 2, platform.y - ballRadius);
+            blocksArr = createBlocks(levelsArr[currentLevel]);
         }                     
     }
 })
@@ -186,77 +162,31 @@ function movePlatform() {
     }
 }
 
-//Создаем блоки
-const block = {
-    row : 2,
-    column : 7,
-    width : 55,
-    height : 20,
-    offsetLeft : 0,
-    offsetTop : 0,
-    marginTop : 40,
-    fillColor : 'brown',
-    strokeColor : 'black'
-}
-let blocks = [];
-function createBlocks() {    
-    for(let row = 0; row < block.row; row++) {
-        blocks[row] = [];
-        for(col = 0; col < block.column; col++) {
-            blocks[row][col] = {
-                x : col * (block.offsetLeft + block.width) + block.offsetLeft,
-                y : row * (block.offsetTop + block.height) + block.offsetTop + block.marginTop,
-                notBroken : true 
-            }
-        }
-        
-    }
-}
-//createBlocks();
-
-//Рисуем блоки
-function drawBlocks() {
-    for(let row = 0; row < block.row; row++) {
-        for(col = 0; col < block.column; col++) {
-            let bl = blocks[row][col];
-            if(bl.notBroken) {
-                canv_context.fillStyle = block.fillColor;
-                canv_context.fillRect(bl.x, bl.y, block.width, block.height);
-                canv_context.strokeStyle = block.strokeColor;
-                canv_context.strokeRect(bl.x, bl.y, block.width, block.height);
-            }
-        }
-     }
-}
-
-createBlocks();
+//создаем массив с блоками
+let blocksArr = createBlocks(levelsArr[currentLevel]);
 
 //Столкновения шарика с блоком
 function ballBlockCollision() {
-    for(let row = 0; row < block.row; row++) {
-        for(col = 0; col < block.column; col++) {
-            let bl = blocks[row][col];
-            if(bl.notBroken) {
-                if(ball.x + ball.radius > bl.x
-                    && ball.x - ball.radius < bl.x + block.width 
-                    && ball.y + ball.radius > bl.y
-                    && ball.y - ball.radius < bl.y + block.height) {
-                        ball.dy = - ball.dy;
-                        bl.notBroken = false;
-                        score += scoreStep;
-                    }
+    blocksArr.forEach(bl => {
+        if(ball.x + ball.radius >= bl.x
+            && ball.x - ball.radius <= bl.x + bl.width 
+            && ball.y + ball.radius >= bl.y
+            && ball.y - ball.radius <= bl.y + bl.height) {
+                ball.dy = - ball.dy;
+                bl.isHit = true;
+                blocksArr = blocksArr.filter(bl => !bl.isHit);
+                score += scoreStep;                
             }
-        }
-     }
-}
-
+        })
+    }
+                
 
 //Показываем игровую информацию
 function showGameInfo(txt, txt_x, txt_y, img, img_x, img_y) {
     canv_context.fillStyle = 'black';
     canv_context.font = '20px Calibri';
     canv_context.fillText(txt, txt_x, txt_y);
-    canv_context.drawImage(img, img_x, img_y, width = 30, height = 30);
+    canv_context.drawImage(img, img_x, img_y, 30, 30);
 }
 
 //Определяем завершение игры
@@ -266,38 +196,30 @@ function gameOver() {
     }
 }
 
-//Переход на следующий уровень
 function nextLevel() {
-    let levelCleared = true;
-    for(let row = 0; row < block.row; row++) {
-        for(col = 0; col < block.column; col++) {
-            levelCleared = levelCleared &&  !blocks[row][col].notBroken; //Вернет true когда все блоки будут разбиты, т.е. notBroken == false
-        }
-    }
-
-    if(levelCleared) {
-        if(level >= maxLevel) {
-            victory = true;
+    if(blocksArr.length == 0) {
+        if(currentLevel >= levelsArr.length - 1) {
+            victory = true;            
             return;
         }
-        block.row++;
-        createBlocks();
+        currentLevel++;        
+        blocksArr = createBlocks(levelsArr[currentLevel]); 
         ball.speed += 0.5;
-        resetBall();
-        level++;
+        ball.resetBall(canv.width / 2, platform.y - ballRadius);        
     }
 }
 
-
 function draw() {
     drawPlatform();
-    drawBall();
-    drawBlocks();
+    ball.drawBall(canv_context);
+
+    //Рисуем блоки. Надо перенести этот функционал в класс Blocks, а здесь вызывать только функцию drawBlocks()
+    blocksArr.forEach(bl => bl.drawBlock(canv_context));
 
     showGameInfo(score, 50, 27, score_img, 5, 5);
-    showGameInfo(level, (canv.width / 2) + 20, 27, level_img, (canv.width / 2) - 20, 5);
+    showGameInfo(currentLevel + 1, (canv.width / 2) + 20, 27, level_img, (canv.width / 2) - 20, 5);
     showGameInfo(life, canv.width - 15, 27, life_img, canv.width - 50, 5);
-    
+       
     if(gameMenu) {
         canv_context.rect(0, 0, canv.width, canv.height);
         canv_context.fillStyle = 'rgba(0, 0, 0, 1)';
@@ -306,7 +228,7 @@ function draw() {
         canv_context.font = '25px Calibri';
         canv_context.fillStyle = 'lightgray';
         canv_context.textAlign = 'center';
-        canv_context.fillText('Нажмите "Enter" чтобы начать игру', canv.width / 2, canv.height / 2);
+        canv_context.fillText('Нажмите "Enter", чтобы начать игру', canv.width / 2, canv.height / 2);
     }
     
     if(gamePaused && !gameMenu) {
@@ -317,12 +239,12 @@ function draw() {
         canv_context.font = '30px Calibri';
         canv_context.fillStyle = 'lightgray';
         canv_context.textAlign = 'center';
-        canv_context.fillText('Pause', canv.width / 2, canv.height / 2);
+        canv_context.fillText('Пауза', canv.width / 2, canv.height / 2);
     }
 
     if(gameIsOver || victory) {
         canv_context.rect(0, 0, canv.width, canv.height);
-        canv_context.fillStyle = 'rgba(0, 0, 0, 1)';
+        canv_context.fillStyle = 'rgba(0, 0, 0, 0.9)';
         canv_context.fill();
 
         canv_context.font = '30px Calibri';
@@ -334,7 +256,7 @@ function draw() {
             canv_context.fillText('Поздравляю! Ты победил! :)', canv.width / 2, canv.height / 2);
         }        
         canv_context.font = '20px Calibri';
-        canv_context.fillText('Нажми "r" чтобы начать заново', canv.width / 2, canv.height * 2 / 3);
+        canv_context.fillText('Нажми "r", чтобы начать заново', canv.width / 2, canv.height * 2 / 3);
         
 
     }
@@ -344,12 +266,12 @@ function draw() {
 function update() {
     if(gamePaused || gameMenu || gameIsOver || victory) return; //Ничег не обновляем, если игра на паузе
     movePlatform();
-    moveBall();
+    ball.moveBall();
     ballWallCollision();
     ballPlatformCollision();
     ballBlockCollision();
     gameOver();
-    nextLevel();
+    nextLevel();    
 }
 
 
