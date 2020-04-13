@@ -14,7 +14,7 @@ export function createBlocks(level) {
    return lvlMatrix; 
 }
 
-/*export const level1 = [
+export const level1 = [
     [{n:1, i:'img/_0block.png'}, {n:1, i:'img/_1bool.png'}, {n:1, i:'img/_0block.png'}, {n:1, i:'img/_1str.png'}, {n:1, i:'img/_0block.png'}],
     [{n:1, i:'img/_1if.png'}, 0, {n:1, i:'img/_1switch.png'}, 0, {n:1, i:'img/_1else.png'}],
     [0, {n:1, i:'img/_1html.png'}, 0, {n:1, i:'img/_1var.png'}, 0],
@@ -26,21 +26,6 @@ export const level2 = [
     [{n:1, i:'img/_0block.png'}, {n:1, i:'img/_0block.png'}, {n:1, i:'img/_0block.png'}, {n:1, i:'img/_0block.png'}, {n:1, i:'img/_0block.png'}],
     [{n:1, i:'img/_2css.png'}, 0, {n:1, i:'img/_2loop.png'}, 0, {n:1, i:'img/_2func.png'}],
     [{n:1, i:'img/_0block.png'}, {n:1, i:'img/_2rand.png'}, {n:1, i:'img/_0block.png'}, {n:1, i:'img/_2arr.png'}, {n:1, i:'img/_0block.png'}]
-];*/
-
-export const level1 = [
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, {n:1, i:'img/_0block.png'}, 0, 0, 0],
-    [0, 0, 0, 0, 0]
-];
-export const level2 = [
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, {n:1, i:'img/_0block.png'}, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0]
 ];
 
 export const level3 = [
@@ -54,6 +39,22 @@ export const level3 = [
 /*export const level4 = [
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0]
+];*/
+
+/*Test levels
+export const level1 = [
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, {n:1, i:'img/_0block.png'}, 0, 0, 0],
+    [0, 0, 0, 0, 0]
+];
+export const level2 = [
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, {n:1, i:'img/_0block.png'}, 0],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0]
