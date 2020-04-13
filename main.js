@@ -9,9 +9,7 @@ let currentLevel = 0;
 const canv = document.getElementById('canv');
 const canv_context = canv.getContext('2d');
 
-//Кол-во уровней, жизней и очков 
-//const maxLevel = 3;
-//let level = 1;
+//Кол-во жизней и очков 
 const maxLife = 1;
 let life = maxLife;
 let scoreStep = 5;
@@ -31,6 +29,7 @@ let gameMenu = true;
 let gameIsOver = false;
 let gamePaused = false;
 let victory = false;
+let levelChange = false;
 
 //Описываем платформу
 const platform = {
@@ -52,7 +51,7 @@ function drawPlatform() {
 //Создаем обьект шарик
 let ball = new Ball(canv.width / 2, platform.y - ballRadius, ballSpeed, ballRadius);
 
-//Ударение о стену
+//Столкновение cо стенками
 function ballWallCollision() {
     if(ball.x + ball.radius >= canv.width || ball.x - ball.radius <= 0) {
         ball.dx = -ball.dx;
@@ -75,8 +74,7 @@ function ballPlatformCollision() {
     
     //Получаем угол отражения шара от платформы в диапазоне от -60 до +60 градусов
     //(в реальности чуть больше за счет того, что при расчете ballHitsPlatformPoint мы берем координату ball.x, а платформа отбивает ball.x+ball.radius)
-    let ballReflactionAngle = ballHitsPlatformPoint * Math.PI / 3;
-    
+    let ballReflactionAngle = ballHitsPlatformPoint * Math.PI / 3;    
     
     if(ball.x + ball.radius > platform.x 
         && ball.x - ball.radius < platform.x + platform.width 
@@ -96,8 +94,7 @@ function resetGame() {
     gameMenu = false;
     gameIsOver = false;
     gamePaused = true;
-    victory = false;
-    
+    victory = false;    
     platform.x = canv.width/2 - platform_width/2;
     platform.y = canv.height - platform_margin_bottom - platform_height;
 }
@@ -118,21 +115,29 @@ document.addEventListener('keyup', function(ev) { //Не двигаем плат
     }
 })
 //Обрабатываем ввод с клавиатуры
-document.addEventListener('keydown', function(ev) { //Переключаем состояние паузы по нажатию "Esc"
+/*document.addEventListener('keydown', function(ev) { //Переключаем состояние паузы по нажатию "Esc"
     if(ev.keyCode == 27) {
         if(gamePaused) {
             gamePaused = false;
         } else {
             gamePaused = true;
-        }        
+        }
     }
-})
+})*/
 document.addEventListener('keydown', function(ev) { //Запускаем игру по нажатию "Enter"
     if(ev.keyCode == 13) {
+        //Включаем/выключаем паузу клавишей "Enter"
+        if(gamePaused) {
+            gamePaused = false;
+            levelChange = false;
+        } else {
+            gamePaused = true;
+        }
+        
         if(gameMenu) {
             gamePaused = false; //Выключаем паузу, если она была включена при нахождении в меню
         }
-        gameMenu = false;              
+        gameMenu = false;
     }
 })
 document.addEventListener('keydown', function(ev) { //Переапускаем игру по нажатию "R" при game over
@@ -205,7 +210,12 @@ function nextLevel() {
         currentLevel++;        
         blocksArr = createBlocks(levelsArr[currentLevel]); 
         ball.speed += 0.5;
-        ball.resetBall(canv.width / 2, platform.y - ballRadius);        
+        ball.resetBall(canv.width / 2, platform.y - ballRadius);
+        platform.x = canv.width/2 - platform_width/2,
+        platform.y = canv.height - platform_margin_bottom - platform_height,
+        gamePaused = true;
+        levelChange = true;
+
     }
 }
 
@@ -220,7 +230,7 @@ function draw() {
     showGameInfo(currentLevel + 1, (canv.width / 2) + 20, 27, level_img, (canv.width / 2) - 20, 5);
     showGameInfo(life, canv.width - 15, 27, life_img, canv.width - 50, 5);
        
-    if(gameMenu) {
+    if(gameMenu) {     //Стартовый экран
         canv_context.rect(0, 0, canv.width, canv.height);
         canv_context.fillStyle = 'rgba(0, 0, 0, 1)';
         canv_context.fill();
@@ -231,7 +241,7 @@ function draw() {
         canv_context.fillText('Нажмите "Enter", чтобы начать игру', canv.width / 2, canv.height / 2);
     }
     
-    if(gamePaused && !gameMenu) {
+    if(gamePaused && !gameMenu && !levelChange) {     //Экран паузы
         canv_context.rect(0, 0, canv.width, canv.height);
         canv_context.fillStyle = 'rgba(0, 0, 0, 0.7)';
         canv_context.fill();
@@ -242,7 +252,20 @@ function draw() {
         canv_context.fillText('Пауза', canv.width / 2, canv.height / 2);
     }
 
-    if(gameIsOver || victory) {
+    if(gamePaused && levelChange) {     //Экран перехода на следующий уровень
+        canv_context.rect(0, 0, canv.width, canv.height);
+        canv_context.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        canv_context.fill();
+
+        canv_context.font = '30px Calibri';
+        canv_context.fillStyle = 'lightgreen';
+        canv_context.textAlign = 'center';
+        canv_context.fillText(`Уровень ${currentLevel+1}`, canv.width / 2, canv.height / 2 -30);
+        canv_context.font = '25px Calibri';
+        canv_context.fillText('Нажми "Enter", чтобы продолжить', canv.width / 2, canv.height / 2 +30);
+    }
+
+    if(gameIsOver || victory) {     //Экран победы или поражения
         canv_context.rect(0, 0, canv.width, canv.height);
         canv_context.fillStyle = 'rgba(0, 0, 0, 0.9)';
         canv_context.fill();
@@ -250,10 +273,14 @@ function draw() {
         canv_context.font = '30px Calibri';
         canv_context.fillStyle = 'lightgray';
         canv_context.textAlign = 'center';
-        if(gameIsOver) {
-            canv_context.fillText('Игра окончена. Ты проиграл :(', canv.width / 2, canv.height / 2);
-        } else {
-            canv_context.fillText('Поздравляю! Ты победил! :)', canv.width / 2, canv.height / 2);
+        if(gameIsOver) {       //Поражение
+            canv_context.fillStyle = 'tomato';
+            canv_context.fillText('Игра окончена', canv.width / 2, canv.height / 2 - 30);
+            canv_context.fillText(`Ты набрал ${score} очков`, canv.width / 2, canv.height / 2 + 30);
+        } else {        //Победа
+            canv_context.fillStyle = 'lightgreen';
+            canv_context.fillText('Победа!', canv.width / 2, canv.height / 2 - 30);
+            canv_context.fillText(`Ты набрал ${score} очков`, canv.width / 2, canv.height / 2 + 30);
         }        
         canv_context.font = '20px Calibri';
         canv_context.fillText('Нажми "r", чтобы начать заново', canv.width / 2, canv.height * 2 / 3);
@@ -262,9 +289,8 @@ function draw() {
     }
 }
 
-
 function update() {
-    if(gamePaused || gameMenu || gameIsOver || victory) return; //Ничег не обновляем, если игра на паузе
+    if(gamePaused || gameMenu || gameIsOver || victory || levelChange) return; //Ничег не обновляем, если игра на паузе
     movePlatform();
     ball.moveBall();
     ballWallCollision();
@@ -274,16 +300,10 @@ function update() {
     nextLevel();    
 }
 
-
 //ИГРА
 function loop() {
     draw();
     update();
-
-    /*if(!gameIsOver) {    //Выполняем основной цикл только если игра не не закончена 
-        requestAnimationFrame(loop);
-    }  */ 
-
     requestAnimationFrame(loop);
 }
 
