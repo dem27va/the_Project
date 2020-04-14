@@ -15,7 +15,7 @@ export function createBlocks(level) {
 }
 
 export const level1 = [
-    [{n:1, i:'/img/block.png'}, {n:1, i:'/img/1bool.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/1str.png'}, {n:1, i:'img/block.png'}],
+    [{n:1, i:'/img/block.png'}, {n:1, i:'/img/1bool.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/1str.png'}, {n:1, i:'/img/block.png'}],
     [{n:1, i:'/img/1if.png'}, 0, {n:1, i:'/img/1switch.png'}, 0, {n:1, i:'/img/1else.png'}],
     [0, {n:1, i:'/img/1html.png'}, 0, {n:1, i:'/img/1var.png'}, 0],
     [{n:1, i:'/img/block.png'}, 0, {n:1, i:'/img/block.png'}, 0, {n:1, i:'/img/block.png'}]
