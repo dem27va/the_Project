@@ -1,4 +1,4 @@
-import {Block} from '/classBlock.js';
+import {Block} from './classBlock.js';
 
 //export let lvlMatrix = [];
 export function createBlocks(level) {

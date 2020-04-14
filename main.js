@@ -1,6 +1,6 @@
-import  {Ball} from '/modules/ball.js';
+import  {Ball} from './modules/ball.js';
 //import {Block} from './modules/classBlock.js';
-import {createBlocks, level1, level2, level3} from '/modules/levels.js';
+import {createBlocks, level1, level2, level3} from './modules/levels.js';
 
 //Объявляем уровни
 let levelsArr = [level1, level2, level3];
@@ -52,7 +52,7 @@ function drawPlatform() {
 let ball = new Ball(canv.width / 2, platform.y - ballRadius, ballSpeed, ballRadius);
 
 //Столкновение cо стенками
-function ballWallCollision() {
+/*function ballWallCollision() {
     if(ball.x + ball.radius >= canv.width || ball.x - ball.radius <= 0) {
         ball.dx = -ball.dx;
     }
@@ -63,7 +63,26 @@ function ballWallCollision() {
         life--;
         ball.resetBall(canv.width / 2, platform.y - ballRadius);        
     }
+}*/
+
+function ballWallCollision() {
+    if(ball.x + ball.radius >= canv.width) {
+        ball.x = canv.width - ball.radius - 1;
+        ball.dx = -ball.dx;
+    }
+    if(ball.x - ball.radius <= 0) {
+        ball.x = 0 + ball.radius + 1;
+        ball.dx = -ball.dx;
+    }
+    if(ball.y - ball.radius <= 0) {
+        ball.dy = -ball.dy;
+    }
+    if(ball.y + ball.radius >= canv.height) {
+        life--;
+        ball.resetBall(canv.width / 2, platform.y - ballRadius);        
+    }
 }
+
 
 //Столкновение с платформой
 function ballPlatformCollision() {
