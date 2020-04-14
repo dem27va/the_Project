@@ -10,6 +10,6 @@ life_img.src = "img/life.png";
 const ball_img = new Image();
 ball_img.src = "img/ball.png";
 
-const block_img = new Image();
-block_img.src = "img/block.png";
+/*const block_img = new Image();
+block_img.src = "img/block.png";*/
 
