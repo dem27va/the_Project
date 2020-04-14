@@ -1,6 +1,6 @@
-import  {Ball} from './modules/ball.js';
+import  {Ball} from '/modules/ball.js';
 //import {Block} from './modules/classBlock.js';
-import {createBlocks, level1, level2, level3} from './modules/levels.js';
+import {createBlocks, level1, level2, level3} from '/modules/levels.js';
 
 //Объявляем уровни
 let levelsArr = [level1, level2, level3];
