@@ -52,7 +52,7 @@ export const level1 = [
     [0, {n:1, i:'/img/0block.png'}, 0, 0, 0],
     [0, 0, 0, 0, 0]
 ];
-/*export const level2 = [
+export const level2 = [
     [0, 0, 0, 0, 0],
     [0, 0, 0, {n:1, i:'/img/3class.png'}, 0],
     [0, 0, 0, 0, 0],
@@ -65,4 +65,4 @@ export const level3 = [
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0]
-];*/
+];
