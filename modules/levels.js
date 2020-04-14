@@ -15,24 +15,24 @@ export function createBlocks(level) {
 }
 
 export const level1 = [
-    [{n:1, i:'/img/block.png'}, {n:1, i:'/img/1bool.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/1str.png'}, {n:1, i:'/img/block.png'}],
-    [{n:1, i:'/img/1if.png'}, 0, {n:1, i:'/img/1switch.png'}, 0, {n:1, i:'/img/1else.png'}],
-    [0, {n:1, i:'/img/1html.png'}, 0, {n:1, i:'/img/1var.png'}, 0],
+    [{n:1, i:'/img/block.png'}, {n:1, i:'/img/bool.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/str.png'}, {n:1, i:'/img/block.png'}],
+    [{n:1, i:'/img/if.png'}, 0, {n:1, i:'/img/switch.png'}, 0, {n:1, i:'/img/else.png'}],
+    [0, {n:1, i:'/img/html.png'}, 0, {n:1, i:'/img/var.png'}, 0],
     [{n:1, i:'/img/block.png'}, 0, {n:1, i:'/img/block.png'}, 0, {n:1, i:'/img/block.png'}]
 ];
 
 export const level2 = [
-    [0, 0, {n:1, i:'/img/2scope.png'}, 0, 0],
+    [0, 0, {n:1, i:'/img/scope.png'}, 0, 0],
     [{n:1, i:'/img/block.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/block.png'}],
-    [{n:1, i:'/img/2css.png'}, 0, {n:1, i:'/img/2loop.png'}, 0, {n:1, i:'/img/2func.png'}],
-    [{n:1, i:'/img/block.png'}, {n:1, i:'/img/2arr.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/2rand.png'}, {n:1, i:'/img/block.png'}]
+    [{n:1, i:'/img/css.png'}, 0, {n:1, i:'/img/loop.png'}, 0, {n:1, i:'/img/func.png'}],
+    [{n:1, i:'/img/block.png'}, {n:1, i:'/img/arr.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/rand.png'}, {n:1, i:'/img/block.png'}]
 ];
 
 export const level3 = [
-    [0, 0, {n:1, i:'/img/3vue.png'}, 0, 0],
+    [0, 0, {n:1, i:'/img/vue.png'}, 0, 0],
     [{n:1, i:'/img/block.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/block.png'}],
-    [{n:1, i:'/img/3obj.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/3class.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/3dom.png'}],
-    [{n:1, i:'/img/block.png'}, 0, {n:1, i:'/img/3oop.png'}, 0, {n:1, i:'/img/block.png'}],
+    [{n:1, i:'/img/obj.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/class.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/dom.png'}],
+    [{n:1, i:'/img/block.png'}, 0, {n:1, i:'/img/oop.png'}, 0, {n:1, i:'/img/block.png'}],
     [{n:1, i:'/img/block.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/block.png'}, {n:1, i:'/img/block.png'}]
 ];
 
