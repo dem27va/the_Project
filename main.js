@@ -110,9 +110,9 @@ function resetGame() {
     score = 0;
     life = maxLife;
     ball.speed = 5;
-    gameMenu = false;
+    gameMenu = true;
     gameIsOver = false;
-    gamePaused = true;
+    gamePaused = false;
     victory = false;    
     platform.x = canv.width/2 - platform_width/2;
     platform.y = canv.height - platform_margin_bottom - platform_height;

@@ -36,16 +36,16 @@ export const level3 = [
     [{n:1, i:'img/_0block.png'}, {n:1, i:'img/_0block.png'}, {n:1, i:'img/_0block.png'}, {n:1, i:'img/_0block.png'}, {n:1, i:'img/_0block.png'}]
 ];
 
-/*export const level4 = [
+export const level4 = [
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0]
-];*/
+];
 
-/*Test levels
-export const level1 = [
+//Test levels
+/*export const level1 = [
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0],
@@ -53,6 +53,13 @@ export const level1 = [
     [0, 0, 0, 0, 0]
 ];
 export const level2 = [
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, {n:1, i:'img/_0block.png'}, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0]
+];
+export const level3 = [
     [0, 0, 0, 0, 0],
     [0, 0, 0, {n:1, i:'img/_0block.png'}, 0],
     [0, 0, 0, 0, 0],
