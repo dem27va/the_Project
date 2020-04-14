@@ -10,7 +10,7 @@ const canv = document.getElementById('canv');
 const canv_context = canv.getContext('2d');
 
 //Кол-во жизней и очков 
-const maxLife = 1;
+const maxLife = 3;
 let life = maxLife;
 let scoreStep = 5;
 let score = 0;
