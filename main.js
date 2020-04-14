@@ -4,7 +4,7 @@ import {createBlocks, level1, level2, level3} from './modules/levels.js';
 
 //Объявляем уровни
 let levelsArr = [level1, level2, level3];
-let currentLevel = 0;
+let currentLevel = 1;
 
 const canv = document.getElementById('canv');
 const canv_context = canv.getContext('2d');
